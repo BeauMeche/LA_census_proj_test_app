@@ -1,0 +1,12 @@
+name: US_Prime_Aged_People
+title: US_Prime_Aged_People
+username:
+account: beaumeche
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 878176
+bundleId: 2024279
+url: https://beaumeche.shinyapps.io/US_Prime_Aged_People/
+when: 1555707519.60929
+asMultiple: FALSE
+asStatic: FALSE

@@ -35,10 +35,10 @@ server <- function(input, output) {
   output$plot_1 <- renderPlot({
     census_2017_nomargin %>% ggplot() +
       geom_jitter(aes(y = "Male; Estimate; Population 18 to 24 years",
-                     x = "US States and Territories")) +
+                      x = "US States and Territories")) +
       labs(x = NULL, y = NULL) + 
       theme_economist_white()
-                              })
+  })
   output$plot_2 <- renderPlot({
     census_2017_nomargin %>% ggplot() +
       geom_jitter(aes(y = "Female; Estimate; Population 18 to 24 years",
@@ -50,6 +50,6 @@ server <- function(input, output) {
   
   
 }
-  
+
 
 shinyApp(ui = ui, server = server)
