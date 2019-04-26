@@ -2,6 +2,8 @@ library(tidyverse)
 library(stringr)
 library(janitor)
 library(gt)
+library(dplyr)
+
 download.file("https://github.com/BeauMeche/Final_proj_milestone_3/raw/master/Census_2017_edu_attainment.csv",
               destfile = "2017_data.csv",
               mode = "wb")
@@ -69,6 +71,22 @@ nice_2017 <- census_2017_nomargin %>%
          key = "key",
          value = "value", 
          na.rm = TRUE)
+
+#Looking at rows of the census data dealing in percentages. Parsed key to get
+#age ranges, so I can start with a graphic of where the elderly people, middle
+#age, and young people tend to congregate toward. Need to filter the "Value" col
+#still, but good progress so far.
+
+percents_of_2017 <- nice_2017 %>% 
+  filter(str_detect(key, pattern = "percent_estimate_population_")) %>% 
+  separate(key, c("type", "accuracy", "type_2", "age_min", "to", "age_max", "right")) %>% 
+  unite(ages, c(age_min, to, age_max), sep = "_", remove = TRUE) %>% 
+  filter(ages != "25_years_and") %>% 
+  select(-type_2, -type, -accuracy)
+
+
+# %>% 
+#   separate(key, into = c("type", "condifence", "type_2", "age_min", "to", "age_max"))
 
 
 # old plot, not quite relevant
