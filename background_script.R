@@ -72,10 +72,10 @@ nice_2017 <- census_2017_nomargin %>%
          value = "value", 
          na.rm = TRUE)
 
-#Looking at rows of the census data dealing in percentages. Parsed key to get
-#age ranges, so I can start with a graphic of where the elderly people, middle
-#age, and young people tend to congregate toward. Need to filter the "Value" col
-#still, but good progress so far.
+# Looking at rows of the census data dealing in percentages. Parsed key to get
+# age ranges, so I can start with a graphic of where the elderly people, middle
+# age, and young people tend to congregate toward. Need to filter the "Value" col
+# still, but good progress so far.
 
 percents_of_2017 <- nice_2017 %>% 
   filter(str_detect(key, pattern = "percent_estimate_population_")) %>% 
@@ -83,6 +83,14 @@ percents_of_2017 <- nice_2017 %>%
   unite(ages, c(age_min, to, age_max), sep = "_", remove = TRUE) %>% 
   filter(ages != "25_years_and") %>% 
   select(-type_2, -type, -accuracy)
+
+
+test <- nice_2017 %>% 
+  if (str_detect(key, "18_to")) {
+    separate(key, pattern = str_extract(key, age)) } else{
+      str_replace(key, "__")
+    }
+      
 
 
 # %>% 
