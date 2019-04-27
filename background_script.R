@@ -98,7 +98,8 @@ pops_of_2017 <- nice_2017 %>%
   
   head(51) %>% 
   arrange(desc(value)) %>% 
-  head(10)
+  head(10) %>% 
+  write_rds(path = "young_people_states.rds")
 
 ggplot(pops_of_2017) + 
   geom_bar(stat = "identity", aes(x = geography, y = value, 
@@ -107,9 +108,16 @@ ggplot(pops_of_2017) +
   labs(
     title = "Where are the young people?",
     subtitle = "Shown: the 10 states with the most people aged 18 to 24", 
-    caption = "Source: the U.S. Census"
-  )
+    caption = "Source: the U.S. Census")
   
+
+
+
+
+
+
+
+
 
 
 test <- nice_2017 %>% 
