@@ -3,6 +3,7 @@ library(stringr)
 library(janitor)
 library(gt)
 library(dplyr)
+library(ggthemes)
 
 download.file("https://github.com/BeauMeche/Final_proj_milestone_3/raw/master/Census_2017_edu_attainment.csv",
               destfile = "2017_data.csv",
@@ -72,17 +73,43 @@ nice_2017 <- census_2017_nomargin %>%
          value = "value", 
          na.rm = TRUE)
 
-# Looking at rows of the census data dealing in percentages. Parsed key to get
-# age ranges, so I can start with a graphic of where the elderly people, middle
-# age, and young people tend to congregate toward. Need to filter the "Value" col
-# still, but good progress so far.
+            # This code is wrong, but the processs works so I am keeping it for reference
+            # for now.
+            
+            # percents_of_2017 <- nice_2017 %>% 
+            #   filter(str_detect(key, pattern = "percent_estimate_population_")) %>% 
+            #   separate(key, c("type", "accuracy", "type_2", "age_min", "to", "age_max", "right")) %>% 
+            #   unite(ages, c(age_min, to, age_max), sep = "_", remove = TRUE) %>% 
+            #   filter(ages != "25_years_and") %>% 
+            #   select(-type_2, -type, -accuracy)
 
-percents_of_2017 <- nice_2017 %>% 
-  filter(str_detect(key, pattern = "percent_estimate_population_")) %>% 
+# plot for milestone 4: where are the young people? 
+
+pops_of_2017 <- nice_2017 %>% 
+  filter(! str_detect(key, pattern = "percent")) %>% 
   separate(key, c("type", "accuracy", "type_2", "age_min", "to", "age_max", "right")) %>% 
   unite(ages, c(age_min, to, age_max), sep = "_", remove = TRUE) %>% 
-  filter(ages != "25_years_and") %>% 
-  select(-type_2, -type, -accuracy)
+  filter(ages %in% c("18_to_24", "35_to_44", "45_to_64", "65_years_and")) %>% 
+  select(-type_2, -type, -accuracy) %>% 
+  filter(id2 != 72) %>% 
+  
+  # duplicated() tells me that the first 51 geographical terms are repeated, so
+  # I am removing them.
+  
+  head(51) %>% 
+  arrange(desc(value)) %>% 
+  head(10)
+
+ggplot(pops_of_2017) + 
+  geom_bar(stat = "identity", aes(x = geography, y = value, 
+                                  fill = geography), show.legend = FALSE) +
+  coord_flip() + theme_fivethirtyeight() +
+  labs(
+    title = "Where are the young people?",
+    subtitle = "Shown: the 10 states with the most people aged 18 to 24", 
+    caption = "Source: the U.S. Census"
+  )
+  
 
 
 test <- nice_2017 %>% 
