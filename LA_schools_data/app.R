@@ -33,6 +33,8 @@ data_2017 <- read_csv(file = "2017_data.csv", skip = 1,
 
 census_2017_nomargin <- data_2017[, ! str_detect(names(data_2017), pattern = "Margin of Error")]
 
+younger_data <- read_rds("young_people_states.rds")
+
 
 # make the UI
 
@@ -75,7 +77,7 @@ server <- function(input, output) {
     })
   
   output$younger <- renderPlot({
-    ggplot(pops_of_2017) + 
+    ggplot(younger_data) + 
       geom_bar(stat = "identity", aes(x = geography, y = value, 
                                       fill = geography), show.legend = FALSE) +
       coord_flip() + theme_fivethirtyeight() +
