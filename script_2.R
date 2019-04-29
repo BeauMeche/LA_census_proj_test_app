@@ -33,15 +33,20 @@ agg_total_pop <- left_join(by = "geography", total_pop_2017, total_pop_2016,
   mutate(sum = totalpop.17 + totalpop.16) %>% 
   mutate(change = ((totalpop.17 - totalpop.16)))
 
-library(maps)
-mapStates = map("state", fill = TRUE, plot = FALSE)
-leaflet(data = mapStates) %>% addTiles() %>%
-  addPolygons(fillColor = topo.colors(10, alpha = NULL), stroke = FALSE)
+# library(maps)
+# mapStates = map("state", fill = TRUE, plot = FALSE)
+# leaflet(data = mapStates) %>% addTiles() %>%
+#   addPolygons(fillColor = topo.colors(10, alpha = NULL), stroke = FALSE)
 
 
 # from the web: i cant get to the json file :(
 # From http://leafletjs.com/examples/choropleth/us-states.js
-states <- geojsonio::geojson_read("json/us-states.geojson", what = "sp")
+# download.file("https://leafletjs.com/examples/choropleth/us-states.js",
+#               destfile = "us-states.geojson",
+#               mode = "wb")
+
+
+states <- geojson_read("us-states-2.geojson", what = "sp")
 
 bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
 pal <- colorBin("YlOrRd", domain = states$density, bins = bins)
@@ -76,3 +81,4 @@ leaflet(states) %>%
       direction = "auto")) %>%
   addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,
             position = "bottomright")
+
