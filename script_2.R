@@ -1,4 +1,3 @@
-library(tidyverse)
 library(stringr)
 library(janitor)
 library(gt)
@@ -6,7 +5,8 @@ library(dplyr)
 library(ggthemes)
 library(leaflet)
 library(geojsonio)
-
+library(tigris)
+library(tidyverse)
 
 # dealing with total population change here
 
@@ -31,7 +31,8 @@ total_pop_2016 <- census_2016_nomargin[, str_detect(names(census_2016_nomargin),
 agg_total_pop <- left_join(by = "geography", total_pop_2017, total_pop_2016,
                            suffix = c(".17", ".16")) %>% 
   mutate(sum = totalpop.17 + totalpop.16) %>% 
-  mutate(change = ((totalpop.17 - totalpop.16)))
+  mutate(change = ((totalpop.17 - totalpop.16))) %>% 
+  write_rds("aggregate_pop")
 
 # library(maps)
 # mapStates = map("state", fill = TRUE, plot = FALSE)
@@ -46,23 +47,32 @@ agg_total_pop <- left_join(by = "geography", total_pop_2017, total_pop_2016,
 #               mode = "wb")
 
 
-states <- geojson_read("us-states-2.geojson", what = "sp")
 
-bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
-pal <- colorBin("YlOrRd", domain = states$density, bins = bins)
+
+
+
+#interactivity map
+
+states <- states()
+all_us <- geo_join(states, agg_total_pop, "NAME", "geography")
+
+bins <- c(-45000, -15000, 0, 15000, 30000,
+          45000, 100000, 200000, Inf)
+
+pal <- colorBin("YlOrRd", domain = all_us$change, bins = bins)
 
 labels <- sprintf(
-  "<strong>%s</strong><br/>%g people / mi<sup>2</sup>",
-  states$name, states$density
+  "<strong>%s</strong><br/>%g people",
+  all_us$geography, all_us$change
 ) %>% lapply(htmltools::HTML)
 
-leaflet(states) %>%
+leaflet(all_us) %>%
   setView(-96, 37.8, 4) %>%
   addProviderTiles("MapBox", options = providerTileOptions(
     id = "mapbox.light",
     accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
   addPolygons(
-    fillColor = ~pal(density),
+    fillColor = ~pal(change),
     weight = 2,
     opacity = 1,
     color = "white",
@@ -70,7 +80,7 @@ leaflet(states) %>%
     fillOpacity = 0.7,
     highlight = highlightOptions(
       weight = 5,
-      color = "#666",
+      color = "#750",
       dashArray = "",
       fillOpacity = 0.7,
       bringToFront = TRUE),
@@ -79,6 +89,6 @@ leaflet(states) %>%
       style = list("font-weight" = "normal", padding = "3px 8px"),
       textsize = "15px",
       direction = "auto")) %>%
-  addLegend(pal = pal, values = ~density, opacity = 0.7, title = NULL,
+  addLegend(pal = pal, values = ~all_us$change, opacity = 0.7, title = NULL,
             position = "bottomright")
 
